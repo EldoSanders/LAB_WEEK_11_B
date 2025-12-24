@@ -1,0 +1,25 @@
+Eldo Sanders
+109407
+
+Saat pengguna mengambil foto, bagian kode yang menangani penyimpanan gambar ke path berdasarkan URI adalah ketika aplikasi membuat URI tujuan dan mengirimkannya ke kamera melalui ActivityResultContracts.TakePicture(). URI tersebut menentukan lokasi file tempat kamera menyimpan hasil foto. Proses ini terjadi pada metode openImageCapture, di mana generatePhotoUri() membuat URI file, lalu URI tersebut dikirim ke launcher kamera. Setelah kamera selesai, callback dipanggil untuk melanjutkan proses penyimpanan ke MediaStore.
+
+
+
+
+Pada FileInfo.kt, atribut pertama (uri)
+merujuk pada Content URI yang dihasilkan oleh FileProvider,
+yang menunjuk ke file fisik tempat kamera menyimpan hasil foto atau video.
+URI ini digunakan untuk memberi akses tulis/baca kepada aplikasi kamera dan
+ContentResolver. Atribut keempat (relativePath) merujuk pada lokasi folder relatif
+di MediaStore (misalnya folder Pictures atau Movies) yang menentukan di mana file akan
+disimpan secara permanen di penyimpanan publik, terutama pada Android 10 ke atas yang
+menggunakan scoped storage.
+
+Ketika pengguna menekan tombol ambil foto, aplikasi terlebih dahulu
+ membuat sebuah file dan URI menggunakan FileProvider. URI ini kemudian
+ dikirim ke aplikasi kamera melalui TakePicture(), sehingga kamera menyimpan
+ hasil foto langsung ke file tersebut. Setelah proses pengambilan foto selesai,
+ callback dipanggil dan aplikasi membuat entri baru di MediaStore menggunakan
+ ContentResolver. Metadata seperti nama file, MIME type, dan relative path ditentukan,
+ lalu isi file dari lokasi sementara disalin ke URI MediaStore. Setelah proses ini selesai,
+ foto tersimpan secara permanen di MediaStore dan dapat diakses oleh aplikasi galeri.
